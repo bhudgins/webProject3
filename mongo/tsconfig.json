@@ -1,0 +1,15 @@
+{
+  "include": [
+      "src/**/*"
+  ],
+  "compilerOptions": {
+        "module": "commonjs",
+        "moduleResolution": "node",
+        "target": "es6",
+        "outDir": "lib",
+        "rootDir": "src",
+        "sourceMap": true,
+        "strict": true
+    },
+    "compileOnSave": true
+}

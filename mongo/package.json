@@ -1,0 +1,37 @@
+{
+  "name": "project",
+  "version": "1.0.0",
+  "description": "Blank starter project",
+  "main": "lib/server.js",
+  "scripts": {
+    "test": "mocha lib/test",
+    "start": "nodemon lib/server.js",
+    "start:debug": "nodemon --inspect lib/server.js",
+    "clean": "rm -rf sessions",
+    "clean:deep": "rm -rf sessions node_modules package-lock.json",
+    "compile": "tsc"
+  },
+  "author": "Gabriel Foust",
+  "license": "ISC",
+  "dependencies": {
+    "@types/express-handlebars": "0.0.30",
+    "body-parser": "^1.18.2",
+    "express": "^4.16.2",
+    "express-handlebars": "^3.0.0",
+    "express-session": "^1.15.6",
+    "mongoose": "^5.0.7",
+    "morgan": "^1.9.0",
+    "session-file-store": "^1.2.0"
+  },
+  "devDependencies": {
+    "@types/body-parser": "^1.16.8",
+    "@types/express": "^4.11.1",
+    "@types/express-session": "^1.15.7",
+    "@types/handlebars": "^4.0.36",
+    "@types/mongoose": "^5.0.3",
+    "@types/morgan": "^1.7.35",
+    "@types/node": "^9.4.1",
+    "@types/session-file-store": "^1.2.0",
+    "typescript": "^2.7.1"
+  }
+}
