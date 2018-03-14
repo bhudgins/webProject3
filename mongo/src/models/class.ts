@@ -1,5 +1,6 @@
 import * as mongoose from "mongoose";
 import "./mongodb";
+import "./user";
 
 const ClassSchema = new mongoose.Schema({
     department:{
@@ -19,9 +20,16 @@ const ClassSchema = new mongoose.Schema({
         maxlength: 200
     },
     teacher:{
-        
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User"
+        //NOT DONE
+        //
+        //
     },
-    students:{},
+    students:{
+        type: [mongoose.Schema.Types.ObjectId],
+        ref: "User"
+    },
     assignments:{
         class:{},
         title:{
