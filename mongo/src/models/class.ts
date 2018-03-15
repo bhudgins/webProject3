@@ -1,37 +1,62 @@
 import * as mongoose from "mongoose";
 import "./mongodb";
-import "./user";
+import { User } from "./user";
+
+// Date function from stack overflow
+function addDays(date, days) {
+    var result = new Date(date);
+    result.setDate(result.getDate() + days);
+    return result;
+}
 
 const ClassSchema = new mongoose.Schema({
-    department:{
+    department: {
         type: String,
         minlength: 4,
         maxlength: 4,
         uppercase: true,
     },
-    number:{
+    number: {
         type: Number,
         max: 999,
         min: 100
     },
-    title:{
+    title: {
         type: String,
         trim: true,
         maxlength: 200
     },
-    teacher:{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User"
-        //NOT DONE
-        //
-        //
+    teacher: {
+        type: User,
+        validator: (id: number) => {
+            User.findById(id).then(user => {
+                return user && user.role == "teacher";
+            })
+        },
+        message: "{VALUE} is not a valid user."
     },
     students:{
-        type: [mongoose.Schema.Types.ObjectId],
-        ref: "User"
+        type: [User],
+        /*
+            may need work
+        */
+        validator: (id: number[]) => {
+            let allStudents: boolean = true;
+            for (let i: number = 0; i < id.length; i++)
+            {
+                User.findById(id[i]).then(user => {
+                    allStudents = user && user.role == "student";
+                })
+            }
+            return allStudents;
+        }, 
+        message: "{VALUE} does not contain all students"
     },
     assignments:{
-        class:{},
+        class: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Class"
+        },
         title:{
             type:String,
             trim: true,
@@ -43,7 +68,9 @@ const ClassSchema = new mongoose.Schema({
         },
         due:{
             type: Date,
-            default: Date.now, // + 2
+            default: () => {
+                return addDays(Date.now(), 2);
+            }
         }
     }
 });
@@ -63,6 +90,6 @@ export interface ClassData {
     }
 }
 
-export interface ClassDocument extends ClassData, mongoose.Document { }
+export interface Class extends ClassData, mongoose.Document { }
 
-export const User = mongoose.model<ClassDocument>("Student", ClassSchema);
+export const Class = mongoose.model<Class>("Class", ClassSchema);

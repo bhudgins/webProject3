@@ -1,5 +1,9 @@
 import * as mongoose from "mongoose";
+import * as crypto from "crypto";
+import * as util from "util";
 import "./mongodb";
+
+const p = util.promisify(crypto.pbkdf2);
 
 const UserSchema = new mongoose.Schema({
   username:{
@@ -31,10 +35,13 @@ const UserSchema = new mongoose.Schema({
   },
   salt:{
     type: String,
-
+    default: crypto.randomBytes(64)
   },
   password:{
-    type: String,
+      type: String,
+      default: (password: string) => {
+          await p(password, salt, 10000, 256, "sha512");
+      }
   }
 });
 
@@ -50,4 +57,4 @@ export interface UserData {
 
 export interface UserDocument extends UserData, mongoose.Document { }
 
-export const User = mongoose.model<UserDocument>("Student", UserSchema);
+export const User = mongoose.model<UserDocument>("User", UserSchema);

@@ -1,0 +1,12 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\mongo",
+    "\\mongo\\src",
+    "\\mongo\\src\\app",
+    "\\mongo\\src\\models",
+    "\\mongo\\static",
+    "\\mongo\\static\\api"
+  ],
+  "PreviewInSolutionExplorer": false
+}
