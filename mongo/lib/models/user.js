@@ -10,7 +10,7 @@ const UserSchema = new mongoose.Schema({
         type: String,
         maxlength: 32,
         unique: true,
-        match: /[a-Z0-9]+(-|_)*[a-Z0-9]+/,
+        match: /[a-zA-Z0-9]+(-|_)*[a-zA-Z0-9]+/,
         required: true
     },
     firstname: {
@@ -28,10 +28,12 @@ const UserSchema = new mongoose.Schema({
     email: {
         type: String,
         match: /\w+.?\w+@\w+.\w+/,
+        required: true
     },
     role: {
         type: String,
-        enum: ["admin", "teacher", "student"]
+        enum: ["admin", "teacher", "student"],
+        required: true
     },
     salt: {
         type: String,
@@ -39,6 +41,10 @@ const UserSchema = new mongoose.Schema({
     },
     password: {
         type: String,
+        required: true
+        /* set: (password: string) => {
+             await p(password, salt, 10000, 256, "sha512");
+         }*/
     }
 });
 exports.User = mongoose.model("User", UserSchema);
