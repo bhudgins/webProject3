@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { User } from "../../models/user";
+import { User, UserData } from "../../models/user";
 
 
 export function Redirect(req: Request, res: Response){
@@ -15,7 +15,15 @@ export async function getAllUsers(req: Request, res: Response) {
 export async function createUser(req: Request, res: Response) {
 
   try{
-    let user = new User(req.body);
+    let data = {} as UserData;
+    data.username = req.body.username;
+    data.firstname = req.body.firstname;
+    data.lastname = req.body.lastname;
+    data.email = req.body.email;
+    data.role = req.body.role;
+    data.password = req.body.password;
+
+    let user = new User(data);
     await user.save();
     res.json(user);
   }
@@ -62,7 +70,15 @@ export function getOneUser(req: Request, res: Response) {
 export async function updateUser(req: Request, res: Response) {  
   try 
   {
-    let user = await User.findByIdAndUpdate(res.locals.user._id, req.body, function (err) {if (err) res.json(err)});
+    let data = {} as UserData;
+    //fix so not undefined if not updated
+    /*data.username = req.body.username;
+    data.firstname = req.body.firstname;
+    data.lastname = req.body.lastname;
+    data.email = req.body.email;
+    data.role = req.body.role;
+    data.password = req.body.password;*/
+    let user = await User.findByIdAndUpdate(res.locals.user._id, data, function (err) {if (err) res.json(err)});
     if (user)
      res.json(user);
   }
