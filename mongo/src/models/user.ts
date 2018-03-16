@@ -39,9 +39,9 @@ const UserSchema = new mongoose.Schema({
   },
   password:{
       type: String,
-      default: (password: string) => {
+     /* set: (password: string) => {
           await p(password, salt, 10000, 256, "sha512");
-      }
+      }*/
   }
 });
 

@@ -39,9 +39,6 @@ const UserSchema = new mongoose.Schema({
     },
     password: {
         type: String,
-        default: (password) => {
-            yield p(password, salt, 10000, 256, "sha512");
-        }
     }
 });
 exports.User = mongoose.model("User", UserSchema);

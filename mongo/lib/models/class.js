@@ -5,7 +5,7 @@ require("./mongodb");
 const user_1 = require("./user");
 // Date function from stack overflow
 function addDays(date, days) {
-    var result = new Date(date);
+    var result = new Date(date.toString());
     result.setDate(result.getDate() + days);
     return result;
 }

@@ -1,12 +1,14 @@
 import { Router } from "express";
 import * as bodyParser from "body-parser";
-import * as students from "./students";
+import * as users from "./users";
 
 export const router = Router();
 
 router.use(bodyParser.json());
-router.param("studentId", students.lookupStudent);
 
-router.get("/students/", students.getAllStudents);
-router.post("/students/", students.createStudent);
-router.get("/students/:studentId", students.getOneStudent);
+router.get("/", users.Redirect)
+router.param("userid", users.lookupUser);
+
+router.get("/users/", users.getAllUsers);
+router.post("/users/", users.createUser);
+router.get("/users/:userid", users.getOneUser);

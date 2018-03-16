@@ -33,9 +33,10 @@ exports.app.use(expressSession({
 }));
 // Routes specific to your application go here:
 exports.app.use("/api", api.router);
-exports.app.get("/download", (req, res) => {
-    res.download("./files/hello.txt", "greeting.txt");
-});
+/*app.get("/download", (req, res) => {
+  res.download("./files/hello.txt", "greeting.txt");
+})
+*/
 // Static files
 exports.app.use(express.static("./static"));
 //# sourceMappingURL=index.js.map

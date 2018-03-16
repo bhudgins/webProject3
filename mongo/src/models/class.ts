@@ -3,8 +3,8 @@ import "./mongodb";
 import { User } from "./user";
 
 // Date function from stack overflow
-function addDays(date, days) {
-    var result = new Date(date);
+function addDays(date: Number, days: any) {
+    var result = new Date(date.toString());
     result.setDate(result.getDate() + days);
     return result;
 }
@@ -41,7 +41,7 @@ const ClassSchema = new mongoose.Schema({
             may need work
         */
         validator: (id: number[]) => {
-            let allStudents: boolean = true;
+            let allStudents: boolean | null = true;
             for (let i: number = 0; i < id.length; i++)
             {
                 User.findById(id[i]).then(user => {

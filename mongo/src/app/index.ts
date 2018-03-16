@@ -39,9 +39,9 @@ app.use(expressSession({
 // Routes specific to your application go here:
 app.use("/api", api.router);
 
-app.get("/download", (req, res) => {
+/*app.get("/download", (req, res) => {
   res.download("./files/hello.txt", "greeting.txt");
 })
-
+*/
 // Static files
 app.use(express.static("./static"));
