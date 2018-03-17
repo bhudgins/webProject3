@@ -45,6 +45,18 @@ const UserSchema = new mongoose.Schema({
         /* set: (password: string) => {
              await p(password, salt, 10000, 256, "sha512");
          }*/
+    },
+});
+UserSchema.set('toJSON', {
+    getters: false,
+    virtuals: false,
+    transform: function (doc, obj, options) {
+        obj.id = obj._id;
+        delete obj._id;
+        delete obj.__v;
+        delete obj.salt;
+        delete obj.password;
+        return obj;
     }
 });
 exports.User = mongoose.model("User", UserSchema);

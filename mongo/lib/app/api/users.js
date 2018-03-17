@@ -23,7 +23,14 @@ exports.getAllUsers = getAllUsers;
 function createUser(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            let user = new user_1.User(req.body);
+            let data = {};
+            data.username = req.body.username;
+            data.firstname = req.body.firstname;
+            data.lastname = req.body.lastname;
+            data.email = req.body.email;
+            data.role = req.body.role;
+            data.password = req.body.password;
+            let user = new user_1.User(data);
             yield user.save();
             res.json(user);
         }
@@ -66,7 +73,15 @@ exports.getOneUser = getOneUser;
 function updateUser(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            let user = yield user_1.User.findByIdAndUpdate(res.locals.user._id, req.body, function (err) { if (err)
+            let data = {};
+            //fix so not undefined if not updated
+            for (let prop in req.body) {
+                if (req.body.hasOwnProperty(prop)) {
+                    if (prop != "salt" && prop != "_id")
+                        data[prop] = req.body[prop];
+                }
+            }
+            let user = yield user_1.User.findByIdAndUpdate(res.locals.user._id, data, function (err) { if (err)
                 res.json(err); });
             if (user)
                 res.json(user);

@@ -3,8 +3,6 @@ import * as crypto from "crypto";
 import * as util from "util";
 import "./mongodb";
 
-const p = util.promisify(crypto.pbkdf2);
-
 const UserSchema = new mongoose.Schema({
   username:{
     type: String,
@@ -42,9 +40,23 @@ const UserSchema = new mongoose.Schema({
   password:{
       type: String,
       required: true
-     /* set: (password: string) => {
-          await p(password, salt, 10000, 256, "sha512");
-      }*/
+      /*set: async (password: string) => {
+          await p(password, this.salt, 10000, 256, "sha512");
+    }*/
+  },
+  
+});
+
+UserSchema.set ('toJSON',{
+  getters:false,
+  virtuals:false,
+  transform:function (doc: any, obj: any, options:any) {
+    obj.id = obj._id;
+    delete obj._id;
+    delete obj.__v;
+    delete obj.salt;
+    delete obj.password;
+    return obj;
   }
 });
 

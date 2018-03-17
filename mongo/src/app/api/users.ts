@@ -24,6 +24,7 @@ export async function createUser(req: Request, res: Response) {
     data.password = req.body.password;
 
     let user = new User(data);
+    user.password = 
     await user.save();
     res.json(user);
   }
@@ -67,17 +68,26 @@ export function getOneUser(req: Request, res: Response) {
   res.json(res.locals.user);
 }
 
+interface DataUserData extends UserData
+{
+  [key: string]: String
+}
+
 export async function updateUser(req: Request, res: Response) {  
   try 
   {
-    let data = {} as UserData;
+
+    let data = {} as DataUserData;
     //fix so not undefined if not updated
-    /*data.username = req.body.username;
-    data.firstname = req.body.firstname;
-    data.lastname = req.body.lastname;
-    data.email = req.body.email;
-    data.role = req.body.role;
-    data.password = req.body.password;*/
+    for (let prop in req.body)
+    {
+      if (req.body.hasOwnProperty(prop))
+      {
+        if(prop != "salt" && prop != "_id")
+          data[prop] = req.body[prop];
+      }
+    }
+   
     let user = await User.findByIdAndUpdate(res.locals.user._id, data, function (err) {if (err) res.json(err)});
     if (user)
      res.json(user);
