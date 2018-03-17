@@ -2,15 +2,13 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose = require("mongoose");
 const crypto = require("crypto");
-const util = require("util");
 require("./mongodb");
-const p = util.promisify(crypto.pbkdf2);
 const UserSchema = new mongoose.Schema({
     username: {
         type: String,
         maxlength: 32,
         unique: true,
-        match: /[a-zA-Z0-9]+(-|_)*[a-zA-Z0-9]+/,
+        match: /^[a-zA-Z\d]([a-zA-Z\d]|[_-][a-zA-Z\d])+$/,
         required: true
     },
     firstname: {
@@ -27,7 +25,7 @@ const UserSchema = new mongoose.Schema({
     },
     email: {
         type: String,
-        match: /\w+.?\w+@\w+.\w+/,
+        match: /^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)+$/,
         required: true
     },
     role: {
@@ -42,9 +40,9 @@ const UserSchema = new mongoose.Schema({
     password: {
         type: String,
         required: true
-        /* set: (password: string) => {
-             await p(password, salt, 10000, 256, "sha512");
-         }*/
+        /*set: async (password: string) => {
+            await p(password, this.salt, 10000, 256, "sha512");
+      }*/
     },
 });
 UserSchema.set('toJSON', {

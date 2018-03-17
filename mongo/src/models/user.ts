@@ -8,7 +8,7 @@ const UserSchema = new mongoose.Schema({
     type: String,
     maxlength: 32,
     unique: true,
-    match: /[a-zA-Z0-9]+(-|_)*[a-zA-Z0-9]+/,
+    match: /^[a-zA-Z\d]([a-zA-Z\d]|[_-][a-zA-Z\d])+$/,
     required: true
   },
   firstname:{
@@ -25,7 +25,7 @@ const UserSchema = new mongoose.Schema({
   },
   email:{
     type:String,
-    match: /\w+.?\w+@\w+.\w+/,
+    match: /^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)+$/,
     required: true
   },
   role:{

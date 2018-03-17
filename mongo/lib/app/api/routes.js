@@ -6,6 +6,7 @@ const users = require("./users");
 exports.router = express_1.Router();
 exports.router.use(bodyParser.json());
 exports.router.get("/", users.Redirect);
+exports.router.use("/", users.Authenticate);
 exports.router.param("userid", users.lookupUser);
 exports.router.get("/users/", users.getAllUsers);
 exports.router.post("/users/", users.createUser);

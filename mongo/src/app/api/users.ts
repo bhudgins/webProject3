@@ -1,19 +1,69 @@
 import { Request, Response, NextFunction } from "express";
 import { User, UserData } from "../../models/user";
+import * as crypto from "crypto";
+import * as util from "util";
+import * as auth from "basic-auth";
+const p = util.promisify(crypto.pbkdf2);
 
-
+export async function Authenticate(req: Request, res: Response, next: NextFunction)
+{
+  let login = auth(req);
+  //console.log(login);
+  if(login)
+  {
+    let user = await User.findOne({"username": login.name});
+    //console.log(user);
+    if (user) {
+      let salt: string = String(user.salt);
+      //console.log(salt);
+      let pass: string = String(login.pass);
+      let encBuffer = await p(pass, salt, 10000, 256, "sha512");
+      let passToCheck = encBuffer.toString("base64");
+      //console.log(passToCheck + ", " + user.password);
+      if (passToCheck === user.password){
+        console.log("Success");
+        res.locals.thisUserRole = user.role;
+        next();
+      }
+      else {
+          res.status(401);
+          res.set("WWW-Authenticate", 'Basic realm="School database"');
+          res.render("Error.hb");
+        }
+        //getAllUsers(req,res);
+    }
+    else {
+      res.status(401);
+      res.set("WWW-Authenticate", 'Basic realm="School database"');
+      res.render("Error.hb");
+    }
+  }
+  else {
+    res.status(401);
+    res.set("WWW-Authenticate", 'Basic realm="School database"');
+    res.render("Error.hb");
+  }
+}
 export function Redirect(req: Request, res: Response){
   res.redirect("../api/index.html");
 }
 
 export async function getAllUsers(req: Request, res: Response) {
-  let users = await User.find()
+  if (res.locals.thisUserRole == "admin" || res.locals.thisUserRole == "teacher")
+  {
+    let users = await User.find()
 
-  res.json(users);
+    res.json(users);
+  }
+  else
+  {
+    res.status(403);
+    res.send("Not authorized to view.");
+  }
 }
 
 export async function createUser(req: Request, res: Response) {
-
+  if (res.locals.thisUserRole == "admin"){
   try{
     let data = {} as UserData;
     data.username = req.body.username;
@@ -24,13 +74,21 @@ export async function createUser(req: Request, res: Response) {
     data.password = req.body.password;
 
     let user = new User(data);
-    user.password = 
+    let salt: string = String(user.salt);
+    let pass: string = String(user.password);
+    let encBuffer = await p(pass, salt, 10000, 256, "sha512");
+    user.password = encBuffer.toString("base64");
     await user.save();
     res.json(user);
   }
   catch(err)
   {
     res.json(err.message);
+  }
+  }
+  else{
+    res.status(403); 
+    res.send("User not authorized to create");
   }
 }
 
@@ -65,7 +123,14 @@ export async function lookupUser(req: Request,
 }
 
 export function getOneUser(req: Request, res: Response) {
-  res.json(res.locals.user);
+  if (res.locals.thisUserRole == "teacher" || res.locals.thisUserRole == "admin") {
+    res.json(res.locals.user);
+  }
+  else 
+  {
+    res.status(403);
+    res.send("Not authorized to view.");
+  }
 }
 
 interface DataUserData extends UserData
@@ -74,40 +139,64 @@ interface DataUserData extends UserData
 }
 
 export async function updateUser(req: Request, res: Response) {  
-  try 
-  {
-
-    let data = {} as DataUserData;
-    //fix so not undefined if not updated
-    for (let prop in req.body)
+  if (res.locals.thisUserRole == "admin"){
+    try 
     {
-      if (req.body.hasOwnProperty(prop))
+
+      let data = {} as DataUserData;
+      //fix so not undefined if not updated
+      for (let prop in req.body)
       {
-        if(prop != "salt" && prop != "_id")
-          data[prop] = req.body[prop];
+        if (req.body.hasOwnProperty(prop))
+        {
+          if(prop != "salt" && prop != "_id")
+            data[prop] = req.body[prop];
+          if(prop == "password")
+          {
+            let salt: string = String(res.locals.user.salt);
+            //console.log(req.body[prop]);
+            let pass: string = String(req.body[prop]);
+            //console.log(pass);
+            let encBuffer = await p(pass, salt, 10000, 256, "sha512");
+            data[prop] = encBuffer.toString("base64");
+          }
+        }
+
       }
+    
+      let user = await User.findByIdAndUpdate(res.locals.user._id, data, function (err) {if (err) res.json(err)});
+      if (user)
+      res.json(user);
     }
-   
-    let user = await User.findByIdAndUpdate(res.locals.user._id, data, function (err) {if (err) res.json(err)});
-    if (user)
-     res.json(user);
+    catch(err)
+    {
+      res.json(err);
+    }
   }
-  catch(err)
-  {
-    res.json(err);
+
+  else{
+    res.status(403); 
+    res.send("User not authorized to update");
   }
+
 }
 
 export async function deleteUser(req: Request, res: Response)
 {
-  try{
+  if (res.locals.thisUserRole == "admin"){
+    try{
 
-  let user = await User.findByIdAndRemove(res.locals.user._id);
-  if (user)
-    res.json(user);
-  }
-  catch (err)
-  {
-    res.json(err);
+    let user = await User.findByIdAndRemove(res.locals.user._id);
+    if (user)
+      res.json(user);
+    }
+    catch (err)
+    {
+      res.json(err);
+    }
+}
+  else{
+    res.status(403); 
+    res.send("User not authorized to delete");
   }
 }
