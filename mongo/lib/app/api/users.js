@@ -59,8 +59,14 @@ function Redirect(req, res) {
 exports.Redirect = Redirect;
 function getAllUsers(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
-        let users = yield user_1.User.find();
-        res.json(users);
+        if (res.locals.thisUserRole == "admin" || res.locals.thisUserRole == "teacher") {
+            let users = yield user_1.User.find();
+            res.json(users);
+        }
+        else {
+            res.status(403);
+            res.send("Not authorized to view.");
+        }
     });
 }
 exports.getAllUsers = getAllUsers;
@@ -121,7 +127,13 @@ function lookupUser(req, res, next, userId) {
 }
 exports.lookupUser = lookupUser;
 function getOneUser(req, res) {
-    res.json(res.locals.user);
+    if (res.locals.thisUserRole == "teacher" || res.locals.thisUserRole == "admin") {
+        res.json(res.locals.user);
+    }
+    else {
+        res.status(403);
+        res.send("Not authorized to view.");
+    }
 }
 exports.getOneUser = getOneUser;
 function updateUser(req, res) {

@@ -12,25 +12,48 @@ export async function getAllClasses(req: Request, res: Response) {
     res.json(classes);
 }
 
-export async function addClass(req: Request, res: Response)
+async function lookUpTeacher(req: Request, res:Response, next:NextFunction, userId: string )
+{
+  let user;
+  try{
+    user = await User.findById(userId);
+  }
+  catch(err)
+  {
+    try{
+     user = await User.findOne({username: userId});
+    }
+    catch(err)
+    {
+     res.status(404);
+     res.json({ message: "Teacher not found" });
+    }
+    
+  }
+  if (user) {
+    res.locals.teacher = user;
+    return;
+  }
+}
+export async function addClass(req: Request, res: Response, next: NextFunction)
 {
 if (res.locals.thisUserRole == "admin" || res.locals.thisUserRole == "teacher") {
     try{
-      let data = {} as UserData;
-      data.username = req.body.username;
-      data.firstname = req.body.firstname;
-      data.lastname = req.body.lastname;
-      data.email = req.body.email;
-      data.role = req.body.role;
-      data.password = req.body.password;
+      let data = {} as ClassData;
+      data.department = req.body.department;
+      data.number = req.body.number;
+      data.title = req.body.title;
+
+      lookUpTeacher(req, res, next, req.body.teacher);
+      data.teacher = res.locals.teacher;
+
+
   
-      let user = new User(data);
-      let salt: string = String(user.salt);
-      let pass: string = String(user.password);
-      let encBuffer = await p(pass, salt, 10000, 256, "sha512");
-      user.password = encBuffer.toString("base64");
-      await user.save();
-      res.json(user);
+      //let user = new User(data);
+      let newClass = new Class(data);
+
+      await newClass.save();
+      res.json(newClass);
     }
     catch(err)
     {

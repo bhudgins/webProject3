@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const bodyParser = require("body-parser");
 const users = require("./users");
+const classes = require("./classes");
 exports.router = express_1.Router();
 exports.router.use(bodyParser.json());
 exports.router.get("/", users.Redirect);
@@ -13,4 +14,10 @@ exports.router.post("/users/", users.createUser);
 exports.router.get("/users/:userid", users.getOneUser);
 exports.router.put("/users/:userid", users.updateUser);
 exports.router.delete("/users/:userid", users.deleteUser);
+//router.param("classid", classes.lookupClass);
+exports.router.get("/classes/", classes.getAllClasses);
+//router.get("/classes/:classid", classes.getOneClass);
+exports.router.post("/classes/", classes.addClass);
+//router.put("/classes/:classid", classes.updateClass);
+//router.delete("/classes/:classid", classes.deleteClass);
 //# sourceMappingURL=routes.js.map

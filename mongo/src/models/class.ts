@@ -28,7 +28,7 @@ const ClassSchema = new mongoose.Schema({
     },
     teacher: {
         type: User,
-        validator: (id: number) => {
+        validator: (id: mongoose.Schema.Types.ObjectId) => {
             User.findById(id).then(user => {
                 return user && user.role == "teacher";
             })
@@ -90,6 +90,6 @@ export interface ClassData {
     }
 }
 
-export interface Class extends ClassData, mongoose.Document { }
+export interface ClassDocument extends ClassData, mongoose.Document { }
 
-export const Class = mongoose.model<Class>("Class", ClassSchema);
+export const Class = mongoose.model<ClassDocument>("Class", ClassSchema);
