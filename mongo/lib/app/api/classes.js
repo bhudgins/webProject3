@@ -37,7 +37,11 @@ function lookUpTeacher(req, res, next, userId) {
         }
         if (user) {
             res.locals.teacher = user;
-            return;
+            return res.locals.teacher;
+        }
+        else {
+            res.status(404);
+            res.json({ message: "Teacher not found" });
         }
     });
 }
@@ -49,8 +53,12 @@ function addClass(req, res, next) {
                 data.department = req.body.department;
                 data.number = req.body.number;
                 data.title = req.body.title;
-                lookUpTeacher(req, res, next, req.body.teacher);
-                data.teacher = res.locals.teacher;
+                let teacher = yield lookUpTeacher(req, res, next, req.body.teacher);
+                console.log(teacher);
+                if (teacher) {
+                    data.teacher = teacher;
+                }
+                console.log(data.teacher);
                 //let user = new User(data);
                 let newClass = new class_1.Class(data);
                 yield newClass.save();

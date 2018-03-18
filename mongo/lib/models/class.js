@@ -29,6 +29,7 @@ const ClassSchema = new mongoose.Schema({
     teacher: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
+        required: true,
         /*validator: (id: number) => {
             User.findById(id).then(user => {
                 return user && user.role == "teacher";

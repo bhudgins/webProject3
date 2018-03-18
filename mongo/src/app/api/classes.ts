@@ -27,12 +27,18 @@ async function lookUpTeacher(req: Request, res:Response, next:NextFunction, user
     {
      res.status(404);
      res.json({ message: "Teacher not found" });
+     
     }
     
   }
   if (user) {
     res.locals.teacher = user;
-    return;
+    return res.locals.teacher;
+  }
+  else
+  {
+    res.status(404);
+    res.json({ message: "Teacher not found" });
   }
 }
 export async function addClass(req: Request, res: Response, next: NextFunction)
@@ -44,10 +50,14 @@ if (res.locals.thisUserRole == "admin" || res.locals.thisUserRole == "teacher") 
       data.number = req.body.number;
       data.title = req.body.title;
 
-      lookUpTeacher(req, res, next, req.body.teacher);
-      data.teacher = res.locals.teacher;
-
-
+      let teacher = await lookUpTeacher(req, res, next, req.body.teacher);
+      //console.log(teacher);
+      if(teacher)
+      {
+        data.teacher = teacher;
+      }
+      
+      //console.log(data.teacher);
   
       //let user = new User(data);
       let newClass = new Class(data);
