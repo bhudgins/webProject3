@@ -12,7 +12,7 @@ export async function Authenticate(req: Request, res: Response, next: NextFuncti
   if(login)
   {
     let user = await User.findOne({"username": login.name});
-    //console.log(user);
+    console.log(user);
     if (user) {
       let salt: string = String(user.salt);
       //console.log(salt);
@@ -87,7 +87,7 @@ export async function createUser(req: Request, res: Response) {
   }
   }
   else{
-    res.status(403); 
+    res.status(403);
     res.send("User not authorized to create");
   }
 }
@@ -126,7 +126,7 @@ export function getOneUser(req: Request, res: Response) {
   if (res.locals.thisUserRole == "teacher" || res.locals.thisUserRole == "admin") {
     res.json(res.locals.user);
   }
-  else 
+  else
   {
     res.status(403);
     res.send("Not authorized to view.");
@@ -138,9 +138,9 @@ interface DataUserData extends UserData
   [key: string]: String
 }
 
-export async function updateUser(req: Request, res: Response) {  
+export async function updateUser(req: Request, res: Response) {
   if (res.locals.thisUserRole == "admin"){
-    try 
+    try
     {
 
       let data = {} as DataUserData;
@@ -163,7 +163,7 @@ export async function updateUser(req: Request, res: Response) {
         }
 
       }
-    
+
       let user = await User.findByIdAndUpdate(res.locals.user._id, data, function (err) {if (err) res.json(err)});
       if (user)
       res.json(user);
@@ -175,7 +175,7 @@ export async function updateUser(req: Request, res: Response) {
   }
 
   else{
-    res.status(403); 
+    res.status(403);
     res.send("User not authorized to update");
   }
 
@@ -196,7 +196,7 @@ export async function deleteUser(req: Request, res: Response)
     }
 }
   else{
-    res.status(403); 
+    res.status(403);
     res.send("User not authorized to delete");
   }
 }

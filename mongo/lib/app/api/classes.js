@@ -15,8 +15,20 @@ const util = require("util");
 const p = util.promisify(crypto.pbkdf2);
 function getAllClasses(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
-        let classes = yield class_1.Class.find();
-        res.json(classes);
+        let classes = yield class_1.Class.find({}, 'department number title teacher');
+        let result = [];
+        let i = 0;
+        for (let i = 0; i < classes.length; i++) {
+            let thisClass = {};
+            thisClass.department = classes[i].department;
+            thisClass.number = classes[i].number;
+            thisClass.title = classes[i].title;
+            let teacher = yield user_1.User.find({ _id: classes[i].teacher }, 'firstname lastname email');
+            thisClass.teacher = { "firstname": teacher[0].firstname, "lastname": teacher[0].lastname,
+                "email": teacher[0].email };
+            result[i] = thisClass;
+        }
+        res.json(result);
     });
 }
 exports.getAllClasses = getAllClasses;
@@ -54,15 +66,16 @@ function addClass(req, res, next) {
                 data.number = req.body.number;
                 data.title = req.body.title;
                 let teacher = yield lookUpTeacher(req, res, next, req.body.teacher);
-                console.log(teacher);
+                //console.log(teacher);
                 if (teacher) {
                     data.teacher = teacher;
                 }
-                console.log(data.teacher);
+                //console.log(data.teacher);
                 //let user = new User(data);
                 let newClass = new class_1.Class(data);
+                data.id = newClass._id;
                 yield newClass.save();
-                res.json(newClass);
+                res.json(data);
             }
             catch (err) {
                 res.json(err.message);

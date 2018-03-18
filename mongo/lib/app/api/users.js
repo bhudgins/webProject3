@@ -19,7 +19,7 @@ function Authenticate(req, res, next) {
         //console.log(login);
         if (login) {
             let user = yield user_1.User.findOne({ "username": login.name });
-            //console.log(user);
+            console.log(user);
             if (user) {
                 let salt = String(user.salt);
                 //console.log(salt);
