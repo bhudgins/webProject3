@@ -64,30 +64,32 @@ async function lookUpTeacher(req: Request, res:Response, next:NextFunction, user
   }
 }
 
-export async function  lookupClass(req: Request, res: Response, next: NextFunction) {
-  let user;
+export async function  lookupClass(req: Request, res: Response, next: NextFunction, classId: string) {
+  let newClass;
   try{
-    user = await User.findById(userId);
+    newClass = await User.findById(classId);
   }
   catch(err)
   {
     try{
-     user = await User.findOne({username: userId});
+      let field1 = classId.substring(0,3);
+      let field2 = classId.substring(4);
+      newClass = await Class.findOne({department: field1, number: field2});
     }
     catch(err)
     {
      res.status(404);
-     res.json({ message: "Teacher not found" });
+     res.json({ message: "Class not found" });
     }
   }
-  if (user) {
-    res.locals.teacher = user;
-    return res.locals.teacher;
+  if (newClass) {
+    res.locals.class = newClass;
+    return res.locals.class;
   }
   else
   {
     res.status(404);
-    res.json({ message: "Teacher not found" });
+    res.json({ message: "Class not found" });
   }
 }
 
