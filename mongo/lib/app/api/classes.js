@@ -56,28 +56,30 @@ function lookUpTeacher(req, res, next, userId) {
         }
     });
 }
-function lookupClass(req, res, next) {
+function lookupClass(req, res, next, classId) {
     return __awaiter(this, void 0, void 0, function* () {
-        let user;
+        let newClass;
         try {
-            user = yield user_1.User.findById(userId);
+            newClass = yield user_1.User.findById(classId);
         }
         catch (err) {
             try {
-                user = yield user_1.User.findOne({ username: userId });
+                let field1 = classId.substring(0, 3);
+                let field2 = classId.substring(4);
+                newClass = yield class_1.Class.findOne({ department: field1, number: field2 });
             }
             catch (err) {
                 res.status(404);
-                res.json({ message: "Teacher not found" });
+                res.json({ message: "Class not found" });
             }
         }
-        if (user) {
-            res.locals.teacher = user;
-            return res.locals.teacher;
+        if (newClass) {
+            res.locals.class = newClass;
+            return res.locals.class;
         }
         else {
             res.status(404);
-            res.json({ message: "Teacher not found" });
+            res.json({ message: "Class not found" });
         }
     });
 }
