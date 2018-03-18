@@ -56,6 +56,32 @@ function lookUpTeacher(req, res, next, userId) {
         }
     });
 }
+function lookupClass(req, res, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        let user;
+        try {
+            user = yield user_1.User.findById(userId);
+        }
+        catch (err) {
+            try {
+                user = yield user_1.User.findOne({ username: userId });
+            }
+            catch (err) {
+                res.status(404);
+                res.json({ message: "Teacher not found" });
+            }
+        }
+        if (user) {
+            res.locals.teacher = user;
+            return res.locals.teacher;
+        }
+        else {
+            res.status(404);
+            res.json({ message: "Teacher not found" });
+        }
+    });
+}
+exports.lookupClass = lookupClass;
 function addClass(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         if (res.locals.thisUserRole == "admin" || res.locals.thisUserRole == "teacher") {

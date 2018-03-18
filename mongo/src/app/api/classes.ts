@@ -51,9 +51,7 @@ async function lookUpTeacher(req: Request, res:Response, next:NextFunction, user
     {
      res.status(404);
      res.json({ message: "Teacher not found" });
-
     }
-
   }
   if (user) {
     res.locals.teacher = user;
@@ -65,6 +63,34 @@ async function lookUpTeacher(req: Request, res:Response, next:NextFunction, user
     res.json({ message: "Teacher not found" });
   }
 }
+
+export async function  lookupClass(req: Request, res: Response, next: NextFunction) {
+  let user;
+  try{
+    user = await User.findById(userId);
+  }
+  catch(err)
+  {
+    try{
+     user = await User.findOne({username: userId});
+    }
+    catch(err)
+    {
+     res.status(404);
+     res.json({ message: "Teacher not found" });
+    }
+  }
+  if (user) {
+    res.locals.teacher = user;
+    return res.locals.teacher;
+  }
+  else
+  {
+    res.status(404);
+    res.json({ message: "Teacher not found" });
+  }
+}
+
 export async function addClass(req: Request, res: Response, next: NextFunction)
 {
 if (res.locals.thisUserRole == "admin" || res.locals.thisUserRole == "teacher") {
