@@ -27,16 +27,22 @@ const ClassSchema = new mongoose.Schema({
         maxlength: 200
     },
     teacher: {
-        type: user_1.User,
-        validator: (id) => {
-            user_1.User.findById(id).then(user => {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        /*validator: (id: number) => {
+            User.findById(id).then(user => {
                 return user && user.role == "teacher";
-            });
+            }) as any;
         },
-        message: "{VALUE} is not a valid user."
+        message: "{VALUE} is not a valid user."*/
+        validate: {
+            validator: (id) => user_1.User.findById(id).then(user => { return user && user.role == "teacher"; }),
+            message: "User ${VALUE} does not exist"
+        }
     },
     students: {
-        type: [user_1.User],
+        type: [mongoose.Schema.Types.ObjectId],
+        ref: "User",
         /*
             may need work
         */
@@ -65,12 +71,6 @@ const ClassSchema = new mongoose.Schema({
             min: 0,
             default: 100
         },
-        due: {
-            type: Date,
-            default: () => {
-                return addDays(Date.now(), 2);
-            }
-        }
     }
 });
 exports.Class = mongoose.model("Class", ClassSchema);
