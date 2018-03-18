@@ -62,8 +62,10 @@ if (res.locals.thisUserRole == "admin" || res.locals.thisUserRole == "teacher") 
       //let user = new User(data);
       let newClass = new Class(data);
 
+      res.locals.data = data;
+      res.locals.data.id = newClass._id;
       await newClass.save();
-      res.json(newClass);
+      res.json(res.locals.data);
     }
     catch(err)
     {

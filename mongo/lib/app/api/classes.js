@@ -54,15 +54,17 @@ function addClass(req, res, next) {
                 data.number = req.body.number;
                 data.title = req.body.title;
                 let teacher = yield lookUpTeacher(req, res, next, req.body.teacher);
-                console.log(teacher);
+                //console.log(teacher);
                 if (teacher) {
                     data.teacher = teacher;
                 }
-                console.log(data.teacher);
+                //console.log(data.teacher);
                 //let user = new User(data);
                 let newClass = new class_1.Class(data);
+                res.locals.data = data;
+                res.locals.data.id = newClass._id;
                 yield newClass.save();
-                res.json(newClass);
+                res.json(res.locals.data);
             }
             catch (err) {
                 res.json(err.message);
