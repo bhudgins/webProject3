@@ -6,13 +6,24 @@ import * as util from "util";
 import * as auth from "basic-auth";
 const p = util.promisify(crypto.pbkdf2);
 
+interface display
+{
+  department: String,
+  number: Number,
+  title: String,
+  teacher: {
+    firstname: String,
+    lastname: String,
+    email: String
+  }
+}
+
 export async function getAllClasses(req: Request, res: Response) {
     let classes = await Class.find({}, 'department number title teacher');
     let result = [];
-    let i = 0;
-    for(let i = 0; i < classes.length; i++)
+    for (let i = 0; i < classes.length; i++)
     {
-      let thisClass = {};
+      let thisClass = {} as display;
       thisClass.department = classes[i].department;
       thisClass.number = classes[i].number;
       thisClass.title = classes[i].title;
@@ -70,13 +81,12 @@ if (res.locals.thisUserRole == "admin" || res.locals.thisUserRole == "teacher") 
         data.teacher = teacher;
       }
 
-      //console.log(data.teacher);
-
-      //let user = new User(data);
       let newClass = new Class(data);
-      data.id = newClass._id;
+      res.locals.data = data
+      res.locals.data.id = newClass._id;
+
       await newClass.save();
-      res.json(data);
+      res.json(res.locals.data);
     }
     catch(err)
     {

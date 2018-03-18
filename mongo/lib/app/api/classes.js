@@ -17,7 +17,6 @@ function getAllClasses(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         let classes = yield class_1.Class.find({}, 'department number title teacher');
         let result = [];
-        let i = 0;
         for (let i = 0; i < classes.length; i++) {
             let thisClass = {};
             thisClass.department = classes[i].department;
@@ -70,12 +69,11 @@ function addClass(req, res, next) {
                 if (teacher) {
                     data.teacher = teacher;
                 }
-                //console.log(data.teacher);
-                //let user = new User(data);
                 let newClass = new class_1.Class(data);
-                data.id = newClass._id;
+                res.locals.data = data;
+                res.locals.data.id = newClass._id;
                 yield newClass.save();
-                res.json(data);
+                res.json(res.locals.data);
             }
             catch (err) {
                 res.json(err.message);
