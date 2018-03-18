@@ -16,6 +16,7 @@ interface display
     lastname: String,
     email: String
   }
+  id: String
 }
 
 export async function getAllClasses(req: Request, res: Response) {
@@ -27,13 +28,60 @@ export async function getAllClasses(req: Request, res: Response) {
       thisClass.department = classes[i].department;
       thisClass.number = classes[i].number;
       thisClass.title = classes[i].title;
-      let teacher = await User.find({_id: classes[i].teacher}, 'firstname lastname email');
+      thisClass.id = classes[i]._id;
+      let teacher = await User.findById(classes[i].teacher, 'firstname lastname email');
 
-      thisClass.teacher = {"firstname": teacher[0].firstname, "lastname": teacher[0].lastname,
-                           "email": teacher[0].email};
+      if (teacher)
+      thisClass.teacher = {"firstname": teacher.firstname, "lastname": teacher.lastname,
+                           "email": teacher.email};
       result[i] = thisClass;
     }
     res.json(result);
+}
+
+export function getOneClass(req: Request, res: Response)
+{
+  res.json(res.locals.class);
+}
+
+export async function  lookupClass(req: Request, res: Response, next: NextFunction, classId: string) {
+  let newClass;
+  try{
+    newClass = await Class.findById(classId, 'department number title teacher');
+  }
+  catch(err)
+  {
+    try{
+      let field1 = classId.substring(0,4);
+      let field2 = classId.substring(4);
+      newClass = await Class.findOne({department: field1, number: field2}, 'department number title teacher');
+    }
+    catch(err)
+    {
+     res.status(404);
+     res.json({ message: "Class not found" });
+    }
+  }
+  if (newClass) {
+    let result = {} as display;
+    result.department = newClass.department;
+    result.number = newClass.number;
+    result.title = newClass.title;
+    result.id = newClass._id;
+    let teacher = await User.findOne({_id: newClass.teacher}, 'firstname lastname email');
+
+    if (teacher) {
+      result.teacher = {"firstname": teacher.firstname,
+       "lastname": teacher.lastname, "email": teacher.email};
+    }
+    res.locals.class = result;
+    next();
+  }
+  else
+  {
+    res.status(404);
+    res.json({ message: "Class not found" });
+  }
 }
 
 async function lookUpTeacher(req: Request, res:Response, next:NextFunction, userId: string )
@@ -55,6 +103,7 @@ async function lookUpTeacher(req: Request, res:Response, next:NextFunction, user
   }
   if (user) {
     res.locals.teacher = user;
+    console.log("teacher set");
     return res.locals.teacher;
   }
   else
@@ -64,37 +113,7 @@ async function lookUpTeacher(req: Request, res:Response, next:NextFunction, user
   }
 }
 
-export async function  lookupClass(req: Request, res: Response, next: NextFunction, classId: string) {
-  let newClass;
-  try{
-    newClass = await User.findById(classId);
-  }
-  catch(err)
-  {
-    try{
-      let field1 = classId.substring(0,3);
-      let field2 = classId.substring(4);
-      newClass = await Class.findOne({department: field1, number: field2});
-    }
-    catch(err)
-    {
-     res.status(404);
-     res.json({ message: "Class not found" });
-    }
-  }
-  if (newClass) {
-    res.locals.class = newClass;
-    return res.locals.class;
-  }
-  else
-  {
-    res.status(404);
-    res.json({ message: "Class not found" });
-  }
-}
-
-export async function addClass(req: Request, res: Response, next: NextFunction)
-{
+export async function addClass(req: Request, res: Response, next: NextFunction) {
 if (res.locals.thisUserRole == "admin" || res.locals.thisUserRole == "teacher") {
     try{
       let data = {} as ClassData;
@@ -103,7 +122,6 @@ if (res.locals.thisUserRole == "admin" || res.locals.thisUserRole == "teacher") 
       data.title = req.body.title;
 
       let teacher = await lookUpTeacher(req, res, next, req.body.teacher);
-      //console.log(teacher);
       if(teacher)
       {
         data.teacher = teacher;
@@ -125,4 +143,95 @@ if (res.locals.thisUserRole == "admin" || res.locals.thisUserRole == "teacher") 
       res.status(403);
       res.send("User not authorized to create");
     }
+}
+
+/*interface DataClassData {
+    [key: string] : String,
+}*/
+
+export async function updateClass(req: Request, res: Response, next: NextFunction) {
+  if (res.locals.thisUserRole == "admin" || res.locals.thisUserRole == "teacher") {
+    try
+    {
+
+      let data = {} as ClassData;
+      //fix so not undefined if not updated
+      for (let prop in req.body)
+      {
+        if (req.body.hasOwnProperty(prop))
+        {
+          if (prop == "teacher")
+          {
+            console.log("data before lookUpTeacher" + data[prop]);
+            let temp = await lookUpTeacher(req, res, next, req.body[prop]);
+            console.log(temp);
+            if (temp)
+             data[prop] = temp;
+
+            console.log("data after lookUpTeacher" + data[prop]);
+          }
+          switch (prop)
+          {
+            case "department": data.department = req.body.department;
+                               break;
+            case "number":     data.number = req.body.number;
+                               break;
+            case "title":      data.title = req.body.title;
+                               break;
+          }
+        }
+      }
+
+      console.log(res.locals.class.id);
+      console.log(data);
+      let newClass = await Class.findByIdAndUpdate(res.locals.class.id, data, function (err) {console.log("h1"); if (err) res.json(err)});
+      if (newClass)
+      {
+        let result = {} as display;
+        result.department = newClass.department;
+        result.number = newClass.number;
+        result.title = newClass.title;
+        result.id = newClass._id;
+        let teacher = await User.findOne({_id: newClass.teacher}, 'firstname lastname email');
+
+        if (teacher) {
+          result.teacher = {"firstname": teacher.firstname,
+           "lastname": teacher.lastname, "email": teacher.email};
+      }
+      res.json(result);
+      }
+    }
+    catch(err)
+    {
+      res.json(err);
+    }
+  }
+  else {
+    res.status(403);
+    res.send("User not authorized to update.");
+  }
+}
+
+export async function deleteClass(req: Request, res: Response) {
+  if (res.locals.thisUserRole == "admin" || res.locals.thisUserRole == "teacher") {
+    try {
+      let thisClass = await Class.findByIdAndRemove(res.locals.class.id);
+      if (thisClass) {
+        let data = {} as ClassData;
+        data.department = thisClass.department;
+        data.number = thisClass.number;
+        data.title = thisClass.title;
+        data.teacher = thisClass.teacher;
+        res.json(data);
+      }
+    }
+    catch (err)
+    {
+      res.json(err);
+    }
+  }
+  else{
+    res.status(403);
+    res.send("User not authorized to delete");
+  }
 }

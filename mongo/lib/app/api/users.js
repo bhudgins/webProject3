@@ -16,17 +16,13 @@ const p = util.promisify(crypto.pbkdf2);
 function Authenticate(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         let login = auth(req);
-        //console.log(login);
         if (login) {
             let user = yield user_1.User.findOne({ "username": login.name });
-            console.log(user);
             if (user) {
                 let salt = String(user.salt);
-                //console.log(salt);
                 let pass = String(login.pass);
                 let encBuffer = yield p(pass, salt, 10000, 256, "sha512");
                 let passToCheck = encBuffer.toString("base64");
-                //console.log(passToCheck + ", " + user.password);
                 if (passToCheck === user.password) {
                     console.log("Success");
                     res.locals.thisUserRole = user.role;
@@ -148,9 +144,7 @@ function updateUser(req, res) {
                             data[prop] = req.body[prop];
                         if (prop == "password") {
                             let salt = String(res.locals.user.salt);
-                            //console.log(req.body[prop]);
                             let pass = String(req.body[prop]);
-                            //console.log(pass);
                             let encBuffer = yield p(pass, salt, 10000, 256, "sha512");
                             data[prop] = encBuffer.toString("base64");
                         }

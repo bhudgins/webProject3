@@ -57,7 +57,7 @@ const ClassSchema = new mongoose.Schema({
                 })
             }
             return allStudents;
-        }, 
+        },
         message: "{VALUE} does not contain all students"
     },
     assignments:{

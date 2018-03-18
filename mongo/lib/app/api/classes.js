@@ -22,15 +22,59 @@ function getAllClasses(req, res) {
             thisClass.department = classes[i].department;
             thisClass.number = classes[i].number;
             thisClass.title = classes[i].title;
-            let teacher = yield user_1.User.find({ _id: classes[i].teacher }, 'firstname lastname email');
-            thisClass.teacher = { "firstname": teacher[0].firstname, "lastname": teacher[0].lastname,
-                "email": teacher[0].email };
+            thisClass.id = classes[i]._id;
+            let teacher = yield user_1.User.findById(classes[i].teacher, 'firstname lastname email');
+            if (teacher)
+                thisClass.teacher = { "firstname": teacher.firstname, "lastname": teacher.lastname,
+                    "email": teacher.email };
             result[i] = thisClass;
         }
         res.json(result);
     });
 }
 exports.getAllClasses = getAllClasses;
+function getOneClass(req, res) {
+    res.json(res.locals.class);
+}
+exports.getOneClass = getOneClass;
+function lookupClass(req, res, next, classId) {
+    return __awaiter(this, void 0, void 0, function* () {
+        let newClass;
+        try {
+            newClass = yield class_1.Class.findById(classId, 'department number title teacher');
+        }
+        catch (err) {
+            try {
+                let field1 = classId.substring(0, 4);
+                let field2 = classId.substring(4);
+                newClass = yield class_1.Class.findOne({ department: field1, number: field2 }, 'department number title teacher');
+            }
+            catch (err) {
+                res.status(404);
+                res.json({ message: "Class not found" });
+            }
+        }
+        if (newClass) {
+            let result = {};
+            result.department = newClass.department;
+            result.number = newClass.number;
+            result.title = newClass.title;
+            result.id = newClass._id;
+            let teacher = yield user_1.User.findOne({ _id: newClass.teacher }, 'firstname lastname email');
+            if (teacher) {
+                result.teacher = { "firstname": teacher.firstname,
+                    "lastname": teacher.lastname, "email": teacher.email };
+            }
+            res.locals.class = result;
+            next();
+        }
+        else {
+            res.status(404);
+            res.json({ message: "Class not found" });
+        }
+    });
+}
+exports.lookupClass = lookupClass;
 function lookUpTeacher(req, res, next, userId) {
     return __awaiter(this, void 0, void 0, function* () {
         let user;
@@ -48,6 +92,7 @@ function lookUpTeacher(req, res, next, userId) {
         }
         if (user) {
             res.locals.teacher = user;
+            console.log("teacher set");
             return res.locals.teacher;
         }
         else {
@@ -56,34 +101,6 @@ function lookUpTeacher(req, res, next, userId) {
         }
     });
 }
-function lookupClass(req, res, next, classId) {
-    return __awaiter(this, void 0, void 0, function* () {
-        let newClass;
-        try {
-            newClass = yield user_1.User.findById(classId);
-        }
-        catch (err) {
-            try {
-                let field1 = classId.substring(0, 3);
-                let field2 = classId.substring(4);
-                newClass = yield class_1.Class.findOne({ department: field1, number: field2 });
-            }
-            catch (err) {
-                res.status(404);
-                res.json({ message: "Class not found" });
-            }
-        }
-        if (newClass) {
-            res.locals.class = newClass;
-            return res.locals.class;
-        }
-        else {
-            res.status(404);
-            res.json({ message: "Class not found" });
-        }
-    });
-}
-exports.lookupClass = lookupClass;
 function addClass(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         if (res.locals.thisUserRole == "admin" || res.locals.thisUserRole == "teacher") {
@@ -93,7 +110,6 @@ function addClass(req, res, next) {
                 data.number = req.body.number;
                 data.title = req.body.title;
                 let teacher = yield lookUpTeacher(req, res, next, req.body.teacher);
-                //console.log(teacher);
                 if (teacher) {
                     data.teacher = teacher;
                 }
@@ -114,4 +130,90 @@ function addClass(req, res, next) {
     });
 }
 exports.addClass = addClass;
+/*interface DataClassData {
+    [key: string] : String,
+}*/
+function updateClass(req, res, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        if (res.locals.thisUserRole == "admin" || res.locals.thisUserRole == "teacher") {
+            try {
+                let data = {};
+                //fix so not undefined if not updated
+                for (let prop in req.body) {
+                    if (req.body.hasOwnProperty(prop)) {
+                        if (prop == "teacher") {
+                            console.log("data before lookUpTeacher" + data[prop]);
+                            let temp = yield lookUpTeacher(req, res, next, req.body[prop]);
+                            console.log(temp);
+                            if (temp)
+                                data[prop] = temp;
+                            console.log("data after lookUpTeacher" + data[prop]);
+                        }
+                        switch (prop) {
+                            case "department":
+                                data.department = req.body.department;
+                                break;
+                            case "number":
+                                data.number = req.body.number;
+                                break;
+                            case "title":
+                                data.title = req.body.title;
+                                break;
+                        }
+                    }
+                }
+                console.log(res.locals.class.id);
+                console.log(data);
+                let newClass = yield class_1.Class.findByIdAndUpdate(res.locals.class.id, data, function (err) { console.log("h1"); if (err)
+                    res.json(err); });
+                if (newClass) {
+                    let result = {};
+                    result.department = newClass.department;
+                    result.number = newClass.number;
+                    result.title = newClass.title;
+                    result.id = newClass._id;
+                    let teacher = yield user_1.User.findOne({ _id: newClass.teacher }, 'firstname lastname email');
+                    if (teacher) {
+                        result.teacher = { "firstname": teacher.firstname,
+                            "lastname": teacher.lastname, "email": teacher.email };
+                    }
+                    res.json(result);
+                }
+            }
+            catch (err) {
+                res.json(err);
+            }
+        }
+        else {
+            res.status(403);
+            res.send("User not authorized to update.");
+        }
+    });
+}
+exports.updateClass = updateClass;
+function deleteClass(req, res) {
+    return __awaiter(this, void 0, void 0, function* () {
+        if (res.locals.thisUserRole == "admin" || res.locals.thisUserRole == "teacher") {
+            try {
+                let thisClass = yield class_1.Class.findByIdAndRemove(res.locals.class.id);
+                if (thisClass) {
+                    let data = {};
+                    data.department = thisClass.department;
+                    data.number = thisClass.number;
+                    data.title = thisClass.title;
+                    data.teacher = thisClass.teacher;
+                    res.json(data);
+                }
+            }
+            catch (err) {
+                res.json(err);
+            }
+        }
+        else {
+            res.status(403);
+            res.send("User not authorized to delete");
+        }
+    });
+}
+exports.deleteClass = deleteClass;
 //# sourceMappingURL=classes.js.map

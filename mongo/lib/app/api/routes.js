@@ -14,10 +14,10 @@ exports.router.post("/users/", users.createUser);
 exports.router.get("/users/:userid", users.getOneUser);
 exports.router.put("/users/:userid", users.updateUser);
 exports.router.delete("/users/:userid", users.deleteUser);
-//router.param("classid", classes.lookupClass);
+exports.router.param("classid", classes.lookupClass);
 exports.router.get("/classes/", classes.getAllClasses);
-//router.get("/classes/:classid", classes.getOneClass);
+exports.router.get("/classes/:classid", classes.getOneClass);
 exports.router.post("/classes/", classes.addClass);
-//router.put("/classes/:classid", classes.updateClass);
-//router.delete("/classes/:classid", classes.deleteClass);
+exports.router.put("/classes/:classid", classes.updateClass);
+exports.router.delete("/classes/:classid", classes.deleteClass);
 //# sourceMappingURL=routes.js.map
