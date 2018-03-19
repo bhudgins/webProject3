@@ -47,14 +47,14 @@ export function getOneClass(req: Request, res: Response)
 export async function  lookupClass(req: Request, res: Response, next: NextFunction, classId: string) {
   let newClass;
   try{
-    newClass = await Class.findById(classId, 'department number title teacher');
+    newClass = await Class.findById(classId);
   }
   catch(err)
   {
     try{
       let field1 = classId.substring(0,4);
       let field2 = classId.substring(4);
-      newClass = await Class.findOne({department: field1, number: field2}, 'department number title teacher');
+      newClass = await Class.findOne({department: field1, number: field2});
     }
     catch(err)
     {
@@ -75,6 +75,7 @@ export async function  lookupClass(req: Request, res: Response, next: NextFuncti
        "lastname": teacher.lastname, "email": teacher.email};
     }
     res.locals.class = result;
+    res.locals.allClassInfo = newClass;
     next();
   }
   else
@@ -184,7 +185,8 @@ export async function updateClass(req: Request, res: Response, next: NextFunctio
 
       console.log(res.locals.class.id);
       console.log(data);
-      let newClass = await Class.findByIdAndUpdate(res.locals.class.id, data, function (err) {console.log("h1"); if (err) res.json(err)});
+      let newClass = await Class.findByIdAndUpdate(res.locals.class.id, data,
+        function (err) {if (err) res.json(err)});
       if (newClass)
       {
         let result = {} as display;

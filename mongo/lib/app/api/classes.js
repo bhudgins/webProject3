@@ -41,13 +41,13 @@ function lookupClass(req, res, next, classId) {
     return __awaiter(this, void 0, void 0, function* () {
         let newClass;
         try {
-            newClass = yield class_1.Class.findById(classId, 'department number title teacher');
+            newClass = yield class_1.Class.findById(classId);
         }
         catch (err) {
             try {
                 let field1 = classId.substring(0, 4);
                 let field2 = classId.substring(4);
-                newClass = yield class_1.Class.findOne({ department: field1, number: field2 }, 'department number title teacher');
+                newClass = yield class_1.Class.findOne({ department: field1, number: field2 });
             }
             catch (err) {
                 res.status(404);
@@ -66,6 +66,7 @@ function lookupClass(req, res, next, classId) {
                     "lastname": teacher.lastname, "email": teacher.email };
             }
             res.locals.class = result;
+            res.locals.allClassInfo = newClass;
             next();
         }
         else {
@@ -164,7 +165,7 @@ function updateClass(req, res, next) {
                 }
                 console.log(res.locals.class.id);
                 console.log(data);
-                let newClass = yield class_1.Class.findByIdAndUpdate(res.locals.class.id, data, function (err) { console.log("h1"); if (err)
+                let newClass = yield class_1.Class.findByIdAndUpdate(res.locals.class.id, data, function (err) { if (err)
                     res.json(err); });
                 if (newClass) {
                     let result = {};

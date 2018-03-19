@@ -61,6 +61,7 @@ const ClassSchema = new mongoose.Schema({
         message: "{VALUE} does not contain all students"
     },
     assignments:{
+        type: [Object],
         class: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Class"
