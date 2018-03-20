@@ -33,11 +33,7 @@ export async function addStudentToClass(req: Request, res: Response, next: NextF
     if (res.locals.user.role == "student")
     {
       try {
-      await Class.findByIdAndUpdate(res.locals.allClassInfo._id, { $push: { students: res.locals.user}},
-        function (err) {
-          if(err)
-            res.json(err);
-        });
+      await Class.findByIdAndUpdate(res.locals.allClassInfo._id, { $push: { students: res.locals.user}});
       res.json(res.locals.user);
       }
       catch (err)

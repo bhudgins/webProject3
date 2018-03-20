@@ -126,7 +126,7 @@ function addClass(req, res, next) {
         }
         else {
             res.status(403);
-            res.send("User not authorized to create");
+            res.json("User not authorized to create");
         }
     });
 }
@@ -187,7 +187,7 @@ function updateClass(req, res, next) {
         }
         else {
             res.status(403);
-            res.send("User not authorized to update.");
+            res.json("User not authorized to update.");
         }
     });
 }
@@ -212,7 +212,7 @@ function deleteClass(req, res) {
         }
         else {
             res.status(403);
-            res.send("User not authorized to delete");
+            res.json("User not authorized to delete");
         }
     });
 }

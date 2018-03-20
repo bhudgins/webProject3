@@ -30,9 +30,9 @@ router.get("/rosters/:classid", roster.getAllStudentsInClass);
 router.put("/rosters/:classid/:userid", roster.addStudentToClass);
 router.delete("/rosters/:classid/:userid", roster.deleteStudentFromClass);
 
-//router.param("assignnum", assignments.lookupAssignmentNumber);
-router.get("assignments/:classid", assignments.getAllAssignmentsInClass);
-router.get("assignments/:classid/:assignnum", assignments.getOneAssignmentInClass);
-router.post("assignments/:classid", assignments.addAssignmentToClass);
-router.put("assignments/:classid/:assignnum", assignments.updateAssignmentInClass);
-router.delete("assignments/:classid/:assignnum", assignments.deleteAssignmentFromClass);
+router.param("assignnum", assignments.lookupAssignmentNumber);
+router.get("/assignments/:classid", assignments.getAllAssignmentsInClass);
+router.get("/assignments/:classid/:assignnum", assignments.getOneAssignmentInClass);
+router.post("/assignments/:classid", assignments.addAssignmentToClass);
+router.put("/assignments/:classid/:assignnum", assignments.updateAssignmentInClass);
+router.delete("/assignments/:classid/:assignnum", assignments.deleteAssignmentFromClass);

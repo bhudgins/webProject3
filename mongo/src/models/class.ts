@@ -9,6 +9,13 @@ function addDays(date: Number, days: any) {
     return result;
 }
 
+export interface AssignmentInterface {
+  class: mongoose.Schema.Types.ObjectId,
+  title: String,
+  points: Number,
+  due: Date
+}
+
 const ClassSchema = new mongoose.Schema({
     department: {
         type: String,
@@ -61,7 +68,7 @@ const ClassSchema = new mongoose.Schema({
         message: "{VALUE} does not contain all students"
     },
     assignments:{
-        type: [Object],
+        type: [ ({}) as AssignmentInterface],
         class: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Class"
@@ -85,6 +92,7 @@ const ClassSchema = new mongoose.Schema({
     }
 });
 
+
 export interface ClassData {
     department: String,
     firstname: String,
@@ -92,12 +100,12 @@ export interface ClassData {
     title: String,
     teacher: String | Promise<any>,
     student: String,
-    assignments:{
+    assignments:[{
         class: String,
         title: String,
-        points: String,
+        points: Number,
         due: Date
-    }
+    }]
 }
 
 export interface ClassDocument extends ClassData, mongoose.Document { }

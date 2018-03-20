@@ -25,10 +25,10 @@ exports.router.delete("/classes/:classid", classes.deleteClass);
 exports.router.get("/rosters/:classid", roster.getAllStudentsInClass);
 exports.router.put("/rosters/:classid/:userid", roster.addStudentToClass);
 exports.router.delete("/rosters/:classid/:userid", roster.deleteStudentFromClass);
-//router.param("assignnum", assignments.lookupAssignmentNumber);
-exports.router.get("assignments/:classid", assignments.getAllAssignmentsInClass);
-exports.router.get("assignments/:classid/:assignnum", assignments.getOneAssignmentInClass);
-exports.router.post("assignments/:classid", assignments.addAssignmentToClass);
-exports.router.put("assignments/:classid/:assignnum", assignments.updateAssignmentInClass);
-exports.router.delete("assignments/:classid/:assignnum", assignments.deleteAssignmentFromClass);
+exports.router.param("assignnum", assignments.lookupAssignmentNumber);
+exports.router.get("/assignments/:classid", assignments.getAllAssignmentsInClass);
+exports.router.get("/assignments/:classid/:assignnum", assignments.getOneAssignmentInClass);
+exports.router.post("/assignments/:classid", assignments.addAssignmentToClass);
+exports.router.put("/assignments/:classid/:assignnum", assignments.updateAssignmentInClass);
+exports.router.delete("/assignments/:classid/:assignnum", assignments.deleteAssignmentFromClass);
 //# sourceMappingURL=routes.js.map

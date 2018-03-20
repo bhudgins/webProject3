@@ -21,14 +21,14 @@ function getAllStudentsInClass(req, res, next) {
                 }
                 else {
                     res.status(400);
-                    res.send("Student not found");
+                    res.json("Student not found");
                 }
             }
             res.json(result);
         }
         else {
             res.status(403);
-            res.send("User not authorized to view.");
+            res.json("User not authorized to view.");
         }
     });
 }
@@ -38,24 +38,21 @@ function addStudentToClass(req, res, next) {
         if (res.locals.thisUserRole == "admin" || res.locals.thisUserRole == "teacher") {
             if (res.locals.user.role == "student") {
                 try {
-                    yield class_1.Class.findByIdAndUpdate(res.locals.allClassInfo._id, { $push: { students: res.locals.user } }, function (err) {
-                        if (err)
-                            res.json(err);
-                    });
+                    yield class_1.Class.findByIdAndUpdate(res.locals.allClassInfo._id, { $push: { students: res.locals.user } });
                     res.json(res.locals.user);
                 }
                 catch (err) {
-                    res.send(err);
+                    res.json(err);
                 }
             }
             else {
                 res.status(400);
-                res.send("User that you attempted to add is not a student");
+                res.json("User that you attempted to add is not a student");
             }
         }
         else {
             res.status(403);
-            res.send("User not authorized to update classes");
+            res.json("User not authorized to update classes");
         }
     });
 }
@@ -72,17 +69,17 @@ function deleteStudentFromClass(req, res, next) {
                     res.json(res.locals.user);
                 }
                 catch (err) {
-                    res.send(err);
+                    res.json(err);
                 }
             }
             else {
                 res.status(400);
-                res.send("User that you attempted to remove is not a student");
+                res.json("User that you attempted to remove is not a student");
             }
         }
         else {
             res.status(403);
-            res.send("User not authorized to update classes");
+            res.json("User not authorized to update classes");
         }
     });
 }

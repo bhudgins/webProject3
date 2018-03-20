@@ -59,7 +59,7 @@ const ClassSchema = new mongoose.Schema({
         message: "{VALUE} does not contain all students"
     },
     assignments: {
-        type: [Object],
+        type: [({})],
         class: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Class"
@@ -73,6 +73,13 @@ const ClassSchema = new mongoose.Schema({
             min: 0,
             default: 100
         },
+        due: {
+            type: Date,
+            default: () => {
+                let now = new Date();
+                return now.setDate(now.getDate() + 2);
+            }
+        }
     }
 });
 exports.Class = mongoose.model("Class", ClassSchema);
