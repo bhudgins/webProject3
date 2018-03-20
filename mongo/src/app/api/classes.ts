@@ -142,7 +142,7 @@ if (res.locals.thisUserRole == "admin" || res.locals.thisUserRole == "teacher") 
     }
     else{
       res.status(403);
-      res.send("User not authorized to create");
+      res.json("User not authorized to create");
     }
 }
 
@@ -210,7 +210,7 @@ export async function updateClass(req: Request, res: Response, next: NextFunctio
   }
   else {
     res.status(403);
-    res.send("User not authorized to update.");
+    res.json("User not authorized to update.");
   }
 }
 
@@ -234,6 +234,6 @@ export async function deleteClass(req: Request, res: Response) {
   }
   else{
     res.status(403);
-    res.send("User not authorized to delete");
+    res.json("User not authorized to delete");
   }
 }

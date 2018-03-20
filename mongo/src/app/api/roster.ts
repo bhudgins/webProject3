@@ -15,14 +15,14 @@ export async function getAllStudentsInClass(req: Request, res: Response, next: N
         }
         else {
           res.status(400);
-          res.send("Student not found");
+          res.json("Student not found");
         }
     }
     res.json(result);
   }
   else {
     res.status(403);
-    res.send("User not authorized to view.");
+    res.json("User not authorized to view.");
   }
 }
 
@@ -42,17 +42,17 @@ export async function addStudentToClass(req: Request, res: Response, next: NextF
       }
       catch (err)
       {
-        res.send(err);
+        res.json(err);
       }
     }
     else {
       res.status(400);
-      res.send("User that you attempted to add is not a student");
+      res.json("User that you attempted to add is not a student");
     }
   }
   else {
     res.status(403);
-    res.send("User not authorized to update classes");
+    res.json("User not authorized to update classes");
   }
 }
 
@@ -72,16 +72,16 @@ export async function deleteStudentFromClass(req: Request, res: Response, next: 
       }
       catch(err)
       {
-        res.send(err);
+        res.json(err);
       }
     }
     else {
       res.status(400);
-      res.send("User that you attempted to remove is not a student");
+      res.json("User that you attempted to remove is not a student");
     }
   }
   else {
       res.status(403);
-      res.send("User not authorized to update classes");
+      res.json("User not authorized to update classes");
     }
 }

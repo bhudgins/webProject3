@@ -54,7 +54,7 @@ export async function getAllUsers(req: Request, res: Response) {
   else
   {
     res.status(403);
-    res.send("Not authorized to view.");
+    res.json("Not authorized to view.");
   }
 }
 
@@ -84,7 +84,7 @@ export async function createUser(req: Request, res: Response) {
   }
   else{
     res.status(403);
-    res.send("User not authorized to create");
+    res.json("User not authorized to create");
   }
 }
 
@@ -125,7 +125,7 @@ export function getOneUser(req: Request, res: Response) {
   else
   {
     res.status(403);
-    res.send("Not authorized to view.");
+    res.json("Not authorized to view.");
   }
 }
 
@@ -170,7 +170,7 @@ export async function updateUser(req: Request, res: Response) {
 
   else{
     res.status(403);
-    res.send("User not authorized to update");
+    res.json("User not authorized to update");
   }
 
 }
@@ -191,6 +191,6 @@ export async function deleteUser(req: Request, res: Response)
 }
   else{
     res.status(403);
-    res.send("User not authorized to delete");
+    res.json("User not authorized to delete");
   }
 }
