@@ -108,20 +108,14 @@ export async function updateAssignmentInClass(req: Request, res: Response, next:
       console.log(newClass.assignments[num]);
 
       if(req.body.class)
-      {
-        console.log(newClass.assignments[num].class);
         newClass.assignments[num].class = req.body.class;
-        console.log(newClass.assignments[num].class);
-      }
+
       if(req.body.title)
         newClass.assignments[num].title = req.body.title;
       
       if(req.body.points)
-      {
-        console.log(newClass.assignments[num].points);
-        newClass.assignments[num].points = req.body.points;
-        console.log(newClass.assignments[num].points);
-      }
+       newClass.assignments[num].points = req.body.points;
+
       if(req.body.due)
         newClass.assignments[num].due = req.body.due;
 

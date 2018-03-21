@@ -104,18 +104,12 @@ function updateAssignmentInClass(req, res, next) {
                 console.log(req.body);
                 console.log(num);
                 console.log(newClass.assignments[num]);
-                if (req.body.class) {
-                    console.log(newClass.assignments[num].class);
+                if (req.body.class)
                     newClass.assignments[num].class = req.body.class;
-                    console.log(newClass.assignments[num].class);
-                }
                 if (req.body.title)
                     newClass.assignments[num].title = req.body.title;
-                if (req.body.points) {
-                    console.log(newClass.assignments[num].points);
+                if (req.body.points)
                     newClass.assignments[num].points = req.body.points;
-                    console.log(newClass.assignments[num].points);
-                }
                 if (req.body.due)
                     newClass.assignments[num].due = req.body.due;
                 // let saved = await newClass.save();
