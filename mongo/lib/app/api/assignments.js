@@ -32,13 +32,27 @@ function addAssignmentToClass(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         if (res.locals.thisUserRole == "teacher" || res.locals.thisUserRole == "admin") {
             try {
-                let Assignment = req.body;
+                /*let Assignment = req.body;
                 res.locals.assignment = req.body;
-                if (res.locals.assignment) {
-                    console.log(res.locals.assignment);
-                    yield class_1.Class.findByIdAndUpdate(res.locals.allClassInfo._id, { $push: { assignments: res.locals.assignment } });
-                    res.json(res.locals.assignment);
+                if (res.locals.assignment){
+                  console.log(res.locals.assignment);
+                  await Class.findByIdAndUpdate(res.locals.allClassInfo._id, {$push : {assignments: res.locals.assignment}});
+                  res.json(res.locals.assignment);*/
+                let Assignment = {};
+                if (req.body.class)
+                    Assignment.class = req.body.class;
+                if (req.body.title)
+                    Assignment.title = req.body.title;
+                if (req.body.points)
+                    Assignment.points = req.body.points;
+                if (req.body.due)
+                    Assignment.due = req.body.due;
+                if (Assignment) {
+                    // console.log(Assignment);
+                    yield class_1.Class.findByIdAndUpdate(res.locals.allClassInfo._id, { $push: { assignments: Assignment } });
+                    res.json(Assignment);
                 }
+                // console.log(res.locals.assignment);
             }
             catch (err) {
                 res.send(err);

@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { Class, ClassData} from "../../models/class";
+import { Class, ClassData, ClassDocument, AssignmentInterface} from "../../models/class";
 import * as mongoose from "mongoose";
 export function lookupAssignmentNumber(req: Request, res: Response, next: NextFunction,
                                        assignnum: number)
@@ -29,13 +29,36 @@ export async function addAssignmentToClass(req: Request, res: Response, next: Ne
 {
   if (res.locals.thisUserRole == "teacher" || res.locals.thisUserRole == "admin") {
     try {
-      let Assignment = req.body;
+      /*let Assignment = req.body;
       res.locals.assignment = req.body;
       if (res.locals.assignment){
         console.log(res.locals.assignment);
         await Class.findByIdAndUpdate(res.locals.allClassInfo._id, {$push : {assignments: res.locals.assignment}});
-        res.json(res.locals.assignment);
+        res.json(res.locals.assignment);*/
+
+     let Assignment = {} as AssignmentInterface;
+
+     if(req.body.class)
+        Assignment.class = req.body.class;
+
+      if(req.body.title)
+        Assignment.title = req.body.title;
+      
+      if(req.body.points)
+        Assignment.points = req.body.points;
+
+      if(req.body.due)
+        Assignment.due = req.body.due;
+
+      
+      if (Assignment){
+       // console.log(Assignment);
+        await Class.findByIdAndUpdate(res.locals.allClassInfo._id, {$push : {assignments:Assignment}});
+        res.json(Assignment);
       }
+
+     // console.log(res.locals.assignment);
+
      }
      catch (err)
      {

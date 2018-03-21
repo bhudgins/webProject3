@@ -9,12 +9,6 @@ function addDays(date, days) {
     result.setDate(result.getDate() + days);
     return result;
 }
-/*export interface AssignmentInterface {
-  class: mongoose.Schema.Types.ObjectId,
-  title: String,
-  points: Number,
-  due: Date
-}*/
 const ClassSchema = new mongoose.Schema({
     department: {
         type: String,
