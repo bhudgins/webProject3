@@ -4,7 +4,6 @@ import * as mongoose from "mongoose";
 export function lookupAssignmentNumber(req: Request, res: Response, next: NextFunction,
                                        assignnum: number)
 {
-  console.log("lookupAssignmentNumber");
   res.locals.assignmentNum = assignnum - 1;
   let assignment = res.locals.allClassInfo.assignments[assignnum - 1];
   if (assignment)
@@ -23,7 +22,6 @@ export function getAllAssignmentsInClass(req: Request, res: Response, next: Next
 
 export function getOneAssignmentInClass(req: Request, res: Response, next: NextFunction)
 {
-  console.log("getOneAssignmentInClass");
   res.json(res.locals.assignment);
 }
 
@@ -102,11 +100,6 @@ export async function updateAssignmentInClass(req: Request, res: Response, next:
     let newClass = await Class.findById(res.locals.allClassInfo._id);
     if(newClass)
     {
-      console.log(newClass);
-      console.log(req.body);
-      console.log(num);
-      console.log(newClass.assignments[num]);
-
       if(req.body.class)
         newClass.assignments[num].class = req.body.class;
 
@@ -131,8 +124,20 @@ export async function updateAssignmentInClass(req: Request, res: Response, next:
   }
 }
 
-export function deleteAssignmentFromClass(req: Request, res: Response, next: NextFunction)
+export async function deleteAssignmentFromClass(req: Request, res: Response, next: NextFunction)
 {
-  console.log("deleteAssignmentFromClass");
-  res.send("deleteAssignmentFromClass");
+  //console.log("deleteAssignmentFromClass");
+  let num = res.locals.assignmentNum;
+  let newClass = await Class.findById(res.locals.allClassInfo._id);
+  if(newClass)
+  {
+    newClass.assignments.splice(num, 1);
+    //console.log(newClass.assignments);
+    let saved = await newClass.update({assignments: newClass.assignments});
+    if(saved)
+    {
+      res.json(res.locals.assignment);
+    }
+  }
+ //res.send("deleteAssignmentFromClass");
 }

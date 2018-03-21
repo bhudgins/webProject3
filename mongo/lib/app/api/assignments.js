@@ -10,7 +10,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const class_1 = require("../../models/class");
 function lookupAssignmentNumber(req, res, next, assignnum) {
-    console.log("lookupAssignmentNumber");
     res.locals.assignmentNum = assignnum - 1;
     let assignment = res.locals.allClassInfo.assignments[assignnum - 1];
     if (assignment) {
@@ -26,7 +25,6 @@ function getAllAssignmentsInClass(req, res, next) {
 }
 exports.getAllAssignmentsInClass = getAllAssignmentsInClass;
 function getOneAssignmentInClass(req, res, next) {
-    console.log("getOneAssignmentInClass");
     res.json(res.locals.assignment);
 }
 exports.getOneAssignmentInClass = getOneAssignmentInClass;
@@ -100,10 +98,6 @@ function updateAssignmentInClass(req, res, next) {
             let num = res.locals.assignmentNum;
             let newClass = yield class_1.Class.findById(res.locals.allClassInfo._id);
             if (newClass) {
-                console.log(newClass);
-                console.log(req.body);
-                console.log(num);
-                console.log(newClass.assignments[num]);
                 if (req.body.class)
                     newClass.assignments[num].class = req.body.class;
                 if (req.body.title)
@@ -125,8 +119,20 @@ function updateAssignmentInClass(req, res, next) {
 }
 exports.updateAssignmentInClass = updateAssignmentInClass;
 function deleteAssignmentFromClass(req, res, next) {
-    console.log("deleteAssignmentFromClass");
-    res.send("deleteAssignmentFromClass");
+    return __awaiter(this, void 0, void 0, function* () {
+        //console.log("deleteAssignmentFromClass");
+        let num = res.locals.assignmentNum;
+        let newClass = yield class_1.Class.findById(res.locals.allClassInfo._id);
+        if (newClass) {
+            newClass.assignments.splice(num, 1);
+            //console.log(newClass.assignments);
+            let saved = yield newClass.update({ assignments: newClass.assignments });
+            if (saved) {
+                res.json(res.locals.assignment);
+            }
+        }
+        //res.send("deleteAssignmentFromClass");
+    });
 }
 exports.deleteAssignmentFromClass = deleteAssignmentFromClass;
 //# sourceMappingURL=assignments.js.map
