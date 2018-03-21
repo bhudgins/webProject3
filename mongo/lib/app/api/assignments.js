@@ -11,6 +11,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const class_1 = require("../../models/class");
 function lookupAssignmentNumber(req, res, next, assignnum) {
     console.log("lookupAssignmentNumber");
+    res.locals.assignmentNum = assignnum - 1;
     let assignment = res.locals.allClassInfo.assignments[assignnum - 1];
     if (assignment) {
         res.locals.assignment = assignment;
@@ -52,47 +53,76 @@ function addAssignmentToClass(req, res, next) {
     });
 }
 exports.addAssignmentToClass = addAssignmentToClass;
+/*interface AssignmentData extends AssignmentInterface {
+  [key: string ] : String | Number | Date | mongoose.Schema.Types.ObjectId
+}*/
 function updateAssignmentInClass(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
-        console.log("updateAssignmentInClass");
-        let data = { class: "", title: "", due: new Date(), points: 0 };
-        for (let prop in req.body) {
-            switch (prop) {
-                case "class":
-                    data.class = req.body.class;
-                    break;
-                case "title":
-                    data.title = req.body.title;
-                    break;
-                case "due":
-                    data.due = req.body.due;
-                    break;
-                case "points":
-                    data.points = req.body.points;
-                    break;
-            }
-            /*if (req.body.hasOwnProperty(prop))
-            {
-                data[prop] = req.body[prop];
-            }*/
+        /*console.log("updateAssignmentInClass");
+        let data = {class: "", title: "", due: new Date(), points: 0};
+        for (let prop in req.body)
+        {
+          switch (prop)
+          {
+            case "class": data.class = req.body.class;break;
+            case "title": data.title = req.body.title;break;
+            case "due": data.due = req.body.due;break;
+            case "points": data.points = req.body.points;break;
+          }
+          /*if (req.body.hasOwnProperty(prop))
+          {
+              data[prop] = req.body[prop];
+          }
         }
         try {
-            //console.log(res.locals.allClassInfo);
-            //console.log(data);
-            let num = res.locals.assignment;
+          //console.log(res.locals.allClassInfo);
+          //console.log(data);
+          let num = res.locals.assignment;
+          let newClass = await Class.findById(res.locals.allClassInfo._id);
+          if (newClass) {
+            let assignmentArray = newClass.assignments;
+            assignmentArray[num] = data;
+            console.log(data);
+            console.log(assignmentArray);
+            newClass.assignments = assignmentArray;
+            await newClass.save();
+            res.json(newClass.assignments);
+          }
+          /*let newClass = await Class.findOneAndUpdate(res.locals.allClassInfo._id,
+            { $set: {'assignments.$' : data} });
+          res.json(newClass);
+        }
+        catch (err)
+        {
+          res.json(err);
+        }*/
+        try {
+            let num = res.locals.assignmentNum;
             let newClass = yield class_1.Class.findById(res.locals.allClassInfo._id);
             if (newClass) {
-                let assignmentArray = newClass.assignments;
-                assignmentArray[num] = data;
-                console.log(data);
-                console.log(assignmentArray);
-                newClass.assignments = assignmentArray;
-                yield newClass.save();
-                res.json(newClass.assignments);
+                console.log(newClass);
+                console.log(req.body);
+                console.log(num);
+                console.log(newClass.assignments[num]);
+                if (req.body.class) {
+                    console.log(newClass.assignments[num].class);
+                    newClass.assignments[num].class = req.body.class;
+                    console.log(newClass.assignments[num].class);
+                }
+                if (req.body.title)
+                    newClass.assignments[num].title = req.body.title;
+                if (req.body.points) {
+                    console.log(newClass.assignments[num].points);
+                    newClass.assignments[num].points = req.body.points;
+                    console.log(newClass.assignments[num].points);
+                }
+                if (req.body.due)
+                    newClass.assignments[num].due = req.body.due;
+                // let saved = await newClass.save();
+                let saved2 = yield newClass.update({ assignments: newClass.assignments });
+                if (saved2)
+                    res.json(newClass.assignments[num]);
             }
-            /*let newClass = await Class.findOneAndUpdate(res.locals.allClassInfo._id,
-              { $set: {'assignments.$' : data} });
-            res.json(newClass);*/
         }
         catch (err) {
             res.json(err);

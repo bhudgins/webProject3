@@ -9,7 +9,8 @@
         "outDir": "lib",
         "rootDir": "src",
         "sourceMap": true,
-        "strict": true
+        "strict": true,
+        "watch": true
     },
     "compileOnSave": true
 }

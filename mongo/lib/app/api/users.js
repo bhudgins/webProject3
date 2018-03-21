@@ -61,7 +61,7 @@ function getAllUsers(req, res) {
         }
         else {
             res.status(403);
-            res.send("Not authorized to view.");
+            res.json("Not authorized to view.");
         }
     });
 }
@@ -91,7 +91,7 @@ function createUser(req, res) {
         }
         else {
             res.status(403);
-            res.send("User not authorized to create");
+            res.json("User not authorized to create");
         }
     });
 }
@@ -128,7 +128,7 @@ function getOneUser(req, res) {
     }
     else {
         res.status(403);
-        res.send("Not authorized to view.");
+        res.json("Not authorized to view.");
     }
 }
 exports.getOneUser = getOneUser;
@@ -161,7 +161,7 @@ function updateUser(req, res) {
         }
         else {
             res.status(403);
-            res.send("User not authorized to update");
+            res.json("User not authorized to update");
         }
     });
 }
@@ -180,7 +180,7 @@ function deleteUser(req, res) {
         }
         else {
             res.status(403);
-            res.send("User not authorized to delete");
+            res.json("User not authorized to delete");
         }
     });
 }
