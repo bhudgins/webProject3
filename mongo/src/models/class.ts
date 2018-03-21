@@ -16,6 +16,30 @@ export interface AssignmentInterface {
   due: Date
 }
 
+const AssignmentSchema = new mongoose.Schema({
+    class: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Class"
+    },
+    title:{
+      type:String,
+      trim: true,
+    },
+    points:{
+      type: Number,
+      min: 0,
+      default: 100
+    },
+    due: {
+      type: Date,
+      default: () => {
+          let now = new Date();
+          return now.setDate(now.getDate() + 2);
+      },
+
+    }
+})
+
 const ClassSchema = new mongoose.Schema({
     department: {
         type: String,
@@ -68,30 +92,19 @@ const ClassSchema = new mongoose.Schema({
         message: "{VALUE} does not contain all students"
     },
     assignments:{
-        type: [{
-          class: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "Class"
-          },
-          title:{
-            type:String,
-            trim: true,
-          },
-          points:{
-            type: Number,
-            min: 0,
-            default: 100
-          },
-          due: {
-            type: Date,
-            default: () => {
-                let now = new Date();
-                return now.setDate(now.getDate() + 2);
-            }
-          }
-    }}],
+        type: [AssignmentSchema]},
 });
 
+AssignmentSchema.set ('toJSON',{
+    getters:false,
+    virtuals:false,
+    transform:function (doc: any, obj: any, options:any) {
+      obj.id = obj._id;
+      delete obj._id;
+      obj.due = doc.due.toLocaleString();
+      return obj;
+    }
+  });
 
 export interface ClassData {
     department: String,

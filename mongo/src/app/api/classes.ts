@@ -21,6 +21,8 @@ interface display
 
 export async function getAllClasses(req: Request, res: Response) {
     let classes = await Class.find({}, 'department number title teacher');
+    if(classes)
+    {
     let result = [];
     for (let i = 0; i < classes.length; i++)
     {
@@ -37,6 +39,11 @@ export async function getAllClasses(req: Request, res: Response) {
       result[i] = thisClass;
     }
     res.json(result);
+  }
+  else{
+    res.status(200);
+    res.json("There are no classes to display");
+  }
 }
 
 export function getOneClass(req: Request, res: Response)
@@ -58,7 +65,7 @@ export async function  lookupClass(req: Request, res: Response, next: NextFuncti
     }
     catch(err)
     {
-     res.status(404);
+     res.status(400);
      res.json({ message: "Class not found" });
     }
   }
@@ -80,7 +87,7 @@ export async function  lookupClass(req: Request, res: Response, next: NextFuncti
   }
   else
   {
-    res.status(404);
+    res.status(400);
     res.json({ message: "Class not found" });
   }
 }
@@ -98,7 +105,7 @@ async function lookUpTeacher(req: Request, res:Response, next:NextFunction, user
     }
     catch(err)
     {
-     res.status(404);
+     res.status(400);
      res.json({ message: "Teacher not found" });
     }
   }
@@ -109,7 +116,7 @@ async function lookUpTeacher(req: Request, res:Response, next:NextFunction, user
   }
   else
   {
-    res.status(404);
+    res.status(400);
     res.json({ message: "Teacher not found" });
   }
 }

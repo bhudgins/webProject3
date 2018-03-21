@@ -16,20 +16,26 @@ const p = util.promisify(crypto.pbkdf2);
 function getAllClasses(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         let classes = yield class_1.Class.find({}, 'department number title teacher');
-        let result = [];
-        for (let i = 0; i < classes.length; i++) {
-            let thisClass = {};
-            thisClass.department = classes[i].department;
-            thisClass.number = classes[i].number;
-            thisClass.title = classes[i].title;
-            thisClass.id = classes[i]._id;
-            let teacher = yield user_1.User.findById(classes[i].teacher, 'firstname lastname email');
-            if (teacher)
-                thisClass.teacher = { "firstname": teacher.firstname, "lastname": teacher.lastname,
-                    "email": teacher.email };
-            result[i] = thisClass;
+        if (classes) {
+            let result = [];
+            for (let i = 0; i < classes.length; i++) {
+                let thisClass = {};
+                thisClass.department = classes[i].department;
+                thisClass.number = classes[i].number;
+                thisClass.title = classes[i].title;
+                thisClass.id = classes[i]._id;
+                let teacher = yield user_1.User.findById(classes[i].teacher, 'firstname lastname email');
+                if (teacher)
+                    thisClass.teacher = { "firstname": teacher.firstname, "lastname": teacher.lastname,
+                        "email": teacher.email };
+                result[i] = thisClass;
+            }
+            res.json(result);
         }
-        res.json(result);
+        else {
+            res.status(200);
+            res.json("There are no classes to display");
+        }
     });
 }
 exports.getAllClasses = getAllClasses;
@@ -50,7 +56,7 @@ function lookupClass(req, res, next, classId) {
                 newClass = yield class_1.Class.findOne({ department: field1, number: field2 });
             }
             catch (err) {
-                res.status(404);
+                res.status(400);
                 res.json({ message: "Class not found" });
             }
         }
@@ -70,7 +76,7 @@ function lookupClass(req, res, next, classId) {
             next();
         }
         else {
-            res.status(404);
+            res.status(400);
             res.json({ message: "Class not found" });
         }
     });
@@ -87,7 +93,7 @@ function lookUpTeacher(req, res, next, userId) {
                 user = yield user_1.User.findOne({ username: userId });
             }
             catch (err) {
-                res.status(404);
+                res.status(400);
                 res.json({ message: "Teacher not found" });
             }
         }
@@ -97,7 +103,7 @@ function lookUpTeacher(req, res, next, userId) {
             return res.locals.teacher;
         }
         else {
-            res.status(404);
+            res.status(400);
             res.json({ message: "Teacher not found" });
         }
     });
