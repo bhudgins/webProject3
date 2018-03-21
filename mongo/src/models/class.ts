@@ -68,28 +68,28 @@ const ClassSchema = new mongoose.Schema({
         message: "{VALUE} does not contain all students"
     },
     assignments:{
-        type: [{}],
-        class: {
+        type: [{
+          class: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Class"
-        },
-        title:{
+          },
+          title:{
             type:String,
             trim: true,
-        },
-        points:{
+          },
+          points:{
             type: Number,
             min: 0,
             default: 100
-        },
-        due: {
+          },
+          due: {
             type: Date,
             default: () => {
                 let now = new Date();
                 return now.setDate(now.getDate() + 2);
             }
-        }
-    }
+          }
+    }}],
 });
 
 
